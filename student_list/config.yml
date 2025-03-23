@@ -1,0 +1,10 @@
+version: 0.1
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+http:
+  addr: :5000
+  headers:
+    Access-Control-Allow-Origin: ["http://localhost:8081"]
+    Access-Control-Allow-Methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    Access-Control-Allow-Headers: ["Authorization", "Content-Type"]
