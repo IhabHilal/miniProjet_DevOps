@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Cloner le dépôt') {
+            steps {
+                git 'https://github.com/IhabHilal/miniProjet_DevOps.git'
+            }
+        }
+
+        stage('Construire l\'image Docker') {
+            steps {
+                script {
+                    // Build avec le tag :alpine pour correspondre au Dockerfile
+                    sh 'docker build -t mon-app:alpine .'
+                    // Tag supplémentaire :latest pour compatibilité
+                    sh 'docker tag mon-app:alpine mon-app:latest'
+                }
+            }
+        }
+
+        stage('Pousser l\'image Docker sur Docker Hub') {
+            steps {
+                withDockerRegistry([credentialsId: 'docker-hub-credentials', url: '']) {
+                    // Push des deux versions (alpine + latest)
+                    sh 'docker tag mon-app:alpine ihab10/mon-app:alpine'
+                    sh 'docker tag mon-app:alpine ihab10/mon-app:latest'
+                    sh 'docker push ihab10/mon-app:alpine'
+                    sh 'docker push ihab10/mon-app:latest'
+                }
+            }
+        }
+
+        stage('Déploiement sur AWS') {
+            steps {
+                // Utilisation de la version alpine sur AWS
+                sh 'ssh -i "C:\\Users\\hilal\\Downloads\\ma-cle.pem" ubuntu@16.170.242.205 "docker pull ihab10/mon-app && docker run -d -p 81:81 ihab10/mon-app"'
+            }
+        }
+    }
+}
