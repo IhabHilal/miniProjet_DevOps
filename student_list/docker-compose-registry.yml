@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  registry:
+    image: registry
+    container_name: local_registry
+    ports:
+      - "5001:5000"  # Mappez le port 5000 du conteneur sur le port 5001 de l'hôte
+    volumes:
+      - registry_data:/var/lib/registry
+      - ./config.yml:/etc/docker/registry/config.yml
+    networks:
+      - registry_network
+
+  registry-ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry-ui
+    ports:
+      - "8081:80"
+    environment:
+      - REGISTRY_TITLE=SUPMIT Registry
+      - REGISTRY_URL=http://registry:5000
+    depends_on:
+      - registry
+    networks:
+      - registry_network
+
+volumes:
+  registry_data:
+
+networks:
+  registry_network:
